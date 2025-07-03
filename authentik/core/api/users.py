@@ -1,5 +1,6 @@
 """User API Views"""
 
+from copy import deepcopy
 from datetime import timedelta
 from json import loads
 from typing import Any
@@ -435,9 +436,11 @@ class UserViewSet(UsedByMixin, ModelViewSet):
         user: User = self.get_object()
         planner = FlowPlanner(flow)
         planner.allow_empty_flows = True
+        plan_request = deepcopy(self.request._request)
+        plan_request.user = user
         try:
             plan = planner.plan(
-                self.request._request,
+                plan_request,
                 {
                     PLAN_CONTEXT_PENDING_USER: user,
                 },
